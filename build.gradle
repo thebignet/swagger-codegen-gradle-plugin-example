@@ -1,44 +1,52 @@
-plugins {
-  id "org.detoeuf.swagger-code-gen" version "1.3"
-  id "java"
+buildscript {
+    repositories {
+        maven {
+            url uri('../repo')
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.detoeuf', name: 'swagger-codegen-plugin', version: '1.6.0'
+    }
 }
+
+apply plugin: 'java'
+apply plugin: 'org.detoeuf.swagger-codegen'
 
 repositories {
     jcenter()
 }
 
-ext {
-    // TODO swaggerInputSpec = 'http://petstore.swagger.io/v2/swagger.json'
-    swaggerInputSpec = 'petstore-swagger.json'
-    
-    swaggerOutput = 'src/swagger' // TODO 'build/swagger'
-    swaggerLanguage = 'java'
-    
-    // TODO it's silly that the "base" package has to be repeated 3 times here
-    swaggerInvokerPackage = 'io.swagger.petstore.client.jersey1'
-    swaggerApiPackage     = 'io.swagger.petstore.client.jersey1.api'
-    swaggerModelPackage   = 'io.swagger.petstore.client.jersey1.model'
+swagger {
+    inputSpec = 'http://petstore.swagger.io/v2/swagger.json'
+
+    output = 'build/swagger'
+    language = 'spring-mvc'
+
+    additionalProperties = [
+            'invokerPackage'   : 'io.swagger.petstore.client.jersey1',
+            'modelPackage'     : 'io.swagger.petstore.client.jersey1.model',
+            'apiPackage'       : 'io.swagger.petstore.client.jersey1.api'
+    ]
+    apis = ''
+    models = ''
 }
 
 sourceSets {
     swagger {
-        java.srcDir file('src/swagger/java') // TODO ('build/swagger/src/main/java')
+        java {
+            srcDir file("${project.buildDir.path}/swagger/src/main/java")
+        }
     }
 }
 
-// TODO This doesn't quite work, yet - how-to fix this?
-compileJava.dependsOn swagger
-
-
-// What follows is, unfortunately, manually copy/pasted from build/swagger/build.gradle.  
-// TODO How to automate this?
 
 ext {
-    swagger_annotations_version = "1.5.0"
-    jackson_version = "2.4.2"
-    jersey_version = "1.18"
-    jodatime_version = "2.3"
-    junit_version = "4.8.1"
+    swagger_annotations_version = '1.5.0'
+    jackson_version = '2.4.2'
+    jersey_version = '1.18'
+    jodatime_version = '2.3'
+    junit_version = '4.8.1'
 }
 
 dependencies {
@@ -50,11 +58,6 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-joda:2.1.5"
     compile "joda-time:joda-time:$jodatime_version"
-    
-    // These are missing in build/swagger/build.gradle, but are needed, and present in build/swagger/pom.xml
-    // https://github.com/swagger-api/swagger-codegen/pull/2119
-    compile "com.brsanthu:migbase64:2.2"
-    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jackson_version"
-    
+
     testCompile "junit:junit:$junit_version"
 }
