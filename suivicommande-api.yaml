@@ -1,0 +1,1173 @@
+swagger: '2.0'
+info:
+  description: Suivi de commande
+  version: 1.8.0-SNAPSHOT
+  title: API SuiviCommande
+  license: {}
+host: 'localhost:8080'
+basePath: /
+tags:
+  - name: contacts
+    description: Updates about customer contact information
+  - name: appointments
+    description: Customers' appointments concerning an order
+  - name: packages
+    description: Packages sent for a customer order
+  - name: services
+    description: Services and options on a customer order
+  - name: proofs
+    description: Proofs necessary to fulfill a customer order
+  - name: alerts
+    description: Alerts concerning a customer order
+  - name: customer orders
+    description: Search for customer orders
+  - name: access code
+    description: SMS for claiming forgotten access code
+  - name: steps
+    description: Steps needed to finish a customer order
+paths:
+  /v1/customerOrders/accessCode:
+    post:
+      tags:
+        - access code
+      summary: accessCode
+      description: Sends the access code for an order by sms
+      operationId: orderAccessCodeUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: mobilePhoneNumber
+          in: query
+          description: mobilePhoneNumber
+          required: false
+          type: string
+        - name: email
+          in: query
+          description: email
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: success
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '422':
+          description: bad_request_functional
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v1/customerOrders/{id}/alerts':
+    get:
+      tags:
+        - alerts
+      summary: find
+      description: Returns a list of pending alerts on the order
+      operationId: alertListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: Maximum number of alerts to return
+          required: false
+          type: integer
+          default: 2
+          format: int32
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AlertResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v1/customerOrders/{id}/appointments':
+    get:
+      tags:
+        - appointments
+      summary: find
+      description: Returns appointments concerning the order
+      operationId: appointmentListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AppointmentResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v1/customerOrders/{id}/contact':
+    post:
+      tags:
+        - contacts
+      summary: create
+      description: Replaces contact information on the order
+      operationId: contactCreateUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: origin
+          description: X-ORANGE-ORIGIN
+          required: false
+          schema:
+            type: string
+        - in: body
+          name: traceId
+          description: X-ORANGE-TRACEID
+          required: false
+          schema:
+            type: string
+        - in: body
+          name: id
+          description: id
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: contactResponse
+          description: contactResponse
+          required: true
+          schema:
+            $ref: '#/definitions/ContactResponse'
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: success
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v1/customerOrders/{id}/proofs':
+    get:
+      tags:
+        - proofs
+      summary: find
+      description: Returns the proofs for an order
+      operationId: proofListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProofResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v1/customerOrders/{id}/services':
+    get:
+      tags:
+        - services
+      summary: find
+      description: Returns services on an order
+      operationId: serviceListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            $ref: '#/definitions/ServicesResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /v2/customerOrders:
+    get:
+      tags:
+        - customer orders
+      summary: find
+      description: Returns a list of orders corresponding to given input parameters
+      operationId: orderListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: publicKeyType
+          in: query
+          description: publicKeyType
+          required: false
+          type: string
+          enum:
+            - phoneNumber
+            - mobilePhoneNumber
+            - msisdn
+            - idAdv
+        - name: publicKeyValue
+          in: query
+          description: publicKeyValue
+          required: false
+          type: string
+        - name: externalKeyType
+          in: query
+          description: externalKeyType
+          required: false
+          type: string
+          enum:
+            - siren
+            - siret
+            - accessCode
+            - orderId
+            - accountId
+        - name: externalKeyValue
+          in: query
+          description: externalKeyValue
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: Maximum number of orders to return
+          required: false
+          type: integer
+          default: 10
+          format: int32
+        - name: sort
+          in: query
+          description: >-
+            Field upon which to sort : status or submissionDate.  Prefix with a
+            minus sign to reverse sort
+          required: false
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CustomerOrderResponse'
+        '400':
+          description: bad_request_technical
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '422':
+          description: bad_request_functional
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v2/customerOrders/{id}':
+    get:
+      tags:
+        - customer orders
+      summary: findById
+      description: Returns an order
+      operationId: orderfindByIdUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            $ref: '#/definitions/CustomerOrderResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v2/customerOrders/{id}/packages':
+    get:
+      tags:
+        - packages
+      summary: find
+      description: Returns packages for an order
+      operationId: packageListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OrderPackageResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v2/customerOrders/{id}/steps':
+    get:
+      tags:
+        - steps
+      summary: find
+      description: Returns the necessary steps to fulfill an order
+      operationId: stepListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            $ref: '#/definitions/StepsResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v2/customerOrders/{id}/stepsSimple':
+    get:
+      tags:
+        - steps
+      summary: find
+      description: Returns the steps displayed by OeM and NEC
+      operationId: stepSimpleListUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/StepSimpleResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/v2/packages/{packageNumber}':
+    get:
+      tags:
+        - packages
+      summary: findById
+      description: Returns a package
+      operationId: packagefindByIdUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-ORANGE-ORIGIN
+          in: header
+          description: X-ORANGE-ORIGIN
+          required: false
+          type: string
+        - name: X-ORANGE-TRACEID
+          in: header
+          description: X-ORANGE-TRACEID
+          required: false
+          type: string
+        - name: packageNumber
+          in: path
+          description: packageNumber
+          required: true
+          type: string
+      responses:
+        '200':
+          description: success
+          schema:
+            $ref: '#/definitions/OrderPackageResponse'
+        '404':
+          description: resource_not_found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: api_in_troubles
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+definitions:
+  ValidationStepResponse:
+    type: object
+    properties:
+      approval:
+        $ref: '#/definitions/StepResponse'
+      preValidation:
+        $ref: '#/definitions/StepResponse'
+      status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - NOT_STARTED
+          - COMPLETED
+      statusUpdate:
+        type: string
+        example: '2016-06-06T06:06:06'
+  CompletionStage«ResponseEntity«CustomerOrderResponse»»:
+    type: object
+  ServicesResponse:
+    type: object
+    properties:
+      airboxService:
+        $ref: '#/definitions/AirboxServiceResponse'
+      internetService:
+        $ref: '#/definitions/ServiceResponse'
+      landlineService:
+        $ref: '#/definitions/LandlineServiceResponse'
+      mobileService:
+        $ref: '#/definitions/MobileServiceResponse'
+      multiligneService:
+        $ref: '#/definitions/ServiceResponse'
+      tvService:
+        $ref: '#/definitions/ServiceResponse'
+      voipService:
+        $ref: '#/definitions/VoipServiceResponse'
+  PackageStepResponse:
+    type: object
+    properties:
+      delivery:
+        $ref: '#/definitions/StepResponse'
+      preparation:
+        $ref: '#/definitions/StepResponse'
+      shipping:
+        $ref: '#/definitions/StepResponse'
+      status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - NOT_STARTED
+          - COMPLETED
+      statusUpdate:
+        type: string
+        example: '2016-06-06T06:06:06'
+      trackingNumber:
+        type: string
+        description: 9L21444000000
+  OrderPackageResponse:
+    type: object
+    required:
+      - equipments
+      - id
+    properties:
+      deliveryDate:
+        type: string
+      deliveryMethod:
+        type: string
+        enum:
+          - ENVOI_BACK_OFFICE
+          - REMIS_AU_CLIENT
+          - DEJA_DETENU
+          - ENVOI_VAD_MOBILE
+          - ENVOI_PAR_PRESTATAIRE
+          - LIVRAISON_DIFFEREE
+          - ECHANGE_DEMANDE
+          - LIVRAISON_PAR_TECHNICIEN
+          - VAD_CONTRE_REMBOURSEMENT
+          - ELEMENT_DE_PACK
+          - ENVOI_COURRIER_DOM
+          - KIALA
+          - ALTADIS
+          - CHRONOPOST
+          - COLISSIMO
+          - LA_POSTE
+          - AUTRE
+      equipments:
+        type: array
+        items:
+          $ref: '#/definitions/EquipmentResponse'
+      id:
+        type: string
+        example: COURRIER0000000001
+      pickupDeadline:
+        type: string
+      shippingAddress:
+        $ref: '#/definitions/AddressResponse'
+      shippingDate:
+        type: string
+      status:
+        type: string
+        example: '000'
+      statusLabel:
+        type: string
+      trackingUrl:
+        type: string
+  StepsResponse:
+    type: object
+    properties:
+      activation:
+        $ref: '#/definitions/ServicesStepResponse'
+      packages:
+        $ref: '#/definitions/PackagesStepResponse'
+      validation:
+        $ref: '#/definitions/ValidationStepResponse'
+  ServiceResponse:
+    type: object
+    required:
+      - operation
+    properties:
+      operation:
+        type: string
+        enum:
+          - CHANGE
+          - CREATION
+          - REMOVAL
+      options:
+        type: array
+        items:
+          $ref: '#/definitions/OptionResponse'
+      status:
+        $ref: '#/definitions/StatusResponse'
+  TimeSlotResponse:
+    type: object
+    required:
+      - begin
+      - end
+    properties:
+      begin:
+        type: string
+        example: '08:00'
+      end:
+        type: string
+        example: '10:00'
+  OptionInstantOnResponse:
+    type: object
+    properties:
+      code:
+        type: string
+        example: O50000002134
+      endDate:
+        type: string
+        example: '2016-06-06'
+      label:
+        type: string
+      operation:
+        type: string
+        enum:
+          - CHANGE
+          - CREATION
+          - REMOVAL
+      status:
+        $ref: '#/definitions/StatusResponse'
+  OptionResponse:
+    type: object
+    properties:
+      code:
+        type: string
+        example: O50000000001
+      label:
+        type: string
+      operation:
+        type: string
+        enum:
+          - CHANGE
+          - CREATION
+          - REMOVAL
+      status:
+        $ref: '#/definitions/StatusResponse'
+  CompletionStage«ResponseEntity«List«AlertResponse»»»:
+    type: object
+  AddressResponse:
+    type: object
+    properties:
+      addressLine:
+        type: string
+        example: 5 rue Jean Moulin
+      city:
+        type: string
+        example: LYON
+      complementAddress:
+        type: string
+        example: Etage 1 Appartement 55 BA
+      label:
+        type: string
+      openingDays:
+        $ref: '#/definitions/OpeningDaysResponse'
+      postalCode:
+        type: string
+        example: '69001'
+  CompletionStage«ResponseEntity«List«StepSimpleResponse»»»:
+    type: object
+  ProofResponse:
+    type: object
+    required:
+      - name
+      - provided
+    properties:
+      name:
+        type: string
+      provided:
+        type: boolean
+  MobileServiceResponse:
+    type: object
+    required:
+      - operation
+    properties:
+      msisdn:
+        type: string
+        example: '0600000000'
+      operation:
+        type: string
+        enum:
+          - CHANGE
+          - CREATION
+          - REMOVAL
+      options:
+        type: array
+        items:
+          $ref: '#/definitions/OptionResponse'
+      portability:
+        $ref: '#/definitions/PortabilityResponse'
+      status:
+        $ref: '#/definitions/StatusResponse'
+  AlertResponse:
+    type: object
+    required:
+      - alertType
+      - id
+      - level
+      - text
+    properties:
+      alertType:
+        type: string
+        enum:
+          - equipment
+          - incident
+          - retard
+          - rdv
+          - activation
+          - mobile_activation
+          - internet_activation
+      id:
+        type: string
+        example: ko_refus_client
+      level:
+        type: string
+        enum:
+          - critical
+          - info
+          - warning
+      text:
+        type: string
+  ContactResponse:
+    type: object
+    properties:
+      mail:
+        type: string
+      mobileNumber:
+        type: string
+  OpeningDaysResponse:
+    type: object
+    properties:
+      friday:
+        type: boolean
+      monday:
+        type: boolean
+      saturday:
+        type: boolean
+      sunday:
+        type: boolean
+      thursday:
+        type: boolean
+      tuesday:
+        type: boolean
+      wednesday:
+        type: boolean
+  VoipServiceResponse:
+    type: object
+    required:
+      - operation
+    properties:
+      ndip:
+        type: string
+      operation:
+        type: string
+        enum:
+          - CHANGE
+          - CREATION
+          - REMOVAL
+      options:
+        type: array
+        items:
+          $ref: '#/definitions/OptionResponse'
+      status:
+        $ref: '#/definitions/StatusResponse'
+  CompletionStage«ResponseEntity«StepsResponse»»:
+    type: object
+  StatusResponse:
+    type: object
+    properties:
+      code:
+        type: string
+        example: '000'
+      lastStatusDate:
+        type: string
+        example: '2016-06-06T06:06:06'
+      statusLabel:
+        type: string
+  StepSimpleResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - NOT_STARTED
+          - COMPLETED
+      statusUpdate:
+        type: string
+        example: '2016-06-06T06:06:06'
+      type:
+        type: string
+        enum:
+          - VALIDATION
+          - SHIPPING
+          - PREPARATION
+          - DELIVERY
+          - DELIVERY_GLOBAL
+          - ACTIVATION
+          - INSTALLATION
+  LandlineServiceResponse:
+    type: object
+    required:
+      - operation
+    properties:
+      nd:
+        type: string
+        example: '0160606060'
+      operation:
+        type: string
+        enum:
+          - CHANGE
+          - CREATION
+          - REMOVAL
+      options:
+        type: array
+        items:
+          $ref: '#/definitions/OptionResponse'
+      status:
+        $ref: '#/definitions/StatusResponse'
+  AirboxServiceResponse:
+    type: object
+    required:
+      - operation
+    properties:
+      operation:
+        type: string
+        enum:
+          - CHANGE
+          - CREATION
+          - REMOVAL
+      optionInstantOn:
+        $ref: '#/definitions/OptionInstantOnResponse'
+      options:
+        type: array
+        items:
+          $ref: '#/definitions/OptionResponse'
+      status:
+        $ref: '#/definitions/StatusResponse'
+  ErrorResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      description:
+        type: string
+      infoURL:
+        type: string
+      message:
+        type: string
+  AppointmentResponse:
+    type: object
+    required:
+      - category
+      - date
+      - duration
+      - status
+      - timeSlot
+    properties:
+      category:
+        type: string
+        enum:
+          - equipment
+          - line
+      date:
+        type: string
+        example: '2016-06-06'
+      duration:
+        type: string
+        example: PT3H
+      status:
+        type: string
+        enum:
+          - initialized
+          - confirmed
+          - completed
+          - successful
+          - canceled
+          - reset
+          - failed
+      timeSlot:
+        $ref: '#/definitions/TimeSlotResponse'
+  PackagesStepResponse:
+    type: object
+    properties:
+      packages:
+        type: array
+        items:
+          $ref: '#/definitions/PackageStepResponse'
+      status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - NOT_STARTED
+          - COMPLETED
+      statusUpdate:
+        type: string
+        example: '2016-06-06T06:06:06'
+  CustomerOrderResponse:
+    type: object
+    required:
+      - brand
+      - id
+      - label
+      - marketSegment
+      - visibility
+    properties:
+      _links:
+        type: array
+        items:
+          $ref: '#/definitions/Link'
+      accessCode:
+        type: string
+        example: AZBYCX1DW
+      actualEndDate:
+        type: string
+        example: '2016-06-06'
+      brand:
+        type: string
+        example: SOSH
+      estimatedEndDate:
+        type: string
+        example: '2016-06-06'
+      id:
+        type: string
+        example: 56S0000000000000000001
+      label:
+        type: string
+      marketSegment:
+        type: string
+        enum:
+          - INTERNAL
+          - OPERATOR
+          - PROFESSIONAL
+          - RESIDENTIAL
+      offerFamily:
+        type: string
+        example: OPEN_ADSL
+      operation:
+        type: string
+        example: CREAT
+      status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - CANCELED
+          - FAILED
+      submissionDate:
+        type: string
+        example: '2016-06-06'
+      visibility:
+        type: string
+        enum:
+          - PUBLIC
+          - INTERNAL
+          - NONE
+  EquipmentResponse:
+    type: object
+    properties:
+      ean:
+        type: string
+      group:
+        type: string
+        enum:
+          - LIVEBOX
+          - DECODEUR_TV
+          - MOBILE
+          - CARTE_TV
+          - CARTE_SIM
+          - CLE_3G_EW
+          - AUTRE
+      id:
+        type: string
+      label:
+        type: string
+      quantity:
+        type: integer
+        format: int32
+  CompletionStage«ResponseEntity«List«CustomerOrderResponse»»»:
+    type: object
+  ServicesStepResponse:
+    type: object
+    properties:
+      serviceAlwaysOn:
+        $ref: '#/definitions/StepResponse'
+      serviceFixe:
+        $ref: '#/definitions/StepResponse'
+      serviceInconnu:
+        $ref: '#/definitions/StepResponse'
+      serviceInternet:
+        $ref: '#/definitions/StepResponse'
+      serviceMobile:
+        $ref: '#/definitions/StepResponse'
+      serviceTv:
+        $ref: '#/definitions/StepResponse'
+      serviceVoip:
+        $ref: '#/definitions/StepResponse'
+      serviceVoipML:
+        $ref: '#/definitions/StepResponse'
+      status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - NOT_STARTED
+          - COMPLETED
+      statusUpdate:
+        type: string
+        example: '2016-06-06T06:06:06'
+  StepResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - NOT_STARTED
+          - COMPLETED
+      statusUpdate:
+        type: string
+        example: '2016-06-06T06:06:06'
+  Link:
+    type: object
+    properties:
+      href:
+        type: string
+      rel:
+        type: string
+      templated:
+        type: boolean
+  PortabilityResponse:
+    type: object
+    properties:
+      end:
+        type: string
+        example: '2016-06-06T06:06:06'
+      start:
+        type: string
+        example: '2016-06-06T06:06:06'

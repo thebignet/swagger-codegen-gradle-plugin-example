@@ -4,6 +4,9 @@ buildscript {
             url uri('../repo')
         }
         mavenCentral()
+        maven {
+            url uri('C:\\applications\\maison\\repositoryMaven')
+        }
     }
     dependencies {
         classpath group: 'org.detoeuf', name: 'swagger-codegen-plugin', version: '1.6.0'
@@ -18,15 +21,16 @@ repositories {
 }
 
 swagger {
-    inputSpec = 'http://petstore.swagger.io/v2/swagger.json'
+    inputSpec = project.file('suivicommande-api.yaml')
 
     output = 'build/swagger'
     language = 'spring-mvc'
 
     additionalProperties = [
-            'invokerPackage'   : 'io.swagger.petstore.client.jersey1',
-            'modelPackage'     : 'io.swagger.petstore.client.jersey1.model',
-            'apiPackage'       : 'io.swagger.petstore.client.jersey1.api'
+            'invokerPackage'         : 'io.swagger.petstore.client.jersey1',
+            'modelPackage'           : 'io.swagger.petstore.client.jersey1.model',
+            'apiPackage'             : 'io.swagger.petstore.client.jersey1.api',
+            'dateLibrary'            : 'java8'
     ]
     apis = ''
     models = ''
