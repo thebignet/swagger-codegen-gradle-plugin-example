@@ -1,5 +1,5 @@
 plugins {
-    id 'org.detoeuf.swagger-codegen' version '1.6.0'
+    id 'org.detoeuf.swagger-codegen' version '1.6.1'
     id 'java'
 }
 
@@ -37,6 +37,7 @@ ext {
 }
 
 dependencies {
+    swaggerCompile 'io.swagger:swagger-annotations:1.5.9'
     swaggerCompile 'org.springframework.boot:spring-boot-starter-web:1.3.5.RELEASE'
     swaggerCompile "io.springfox:springfox-swagger2:${springfoxVersion}"
     swaggerCompile "io.springfox:springfox-swagger-ui:${springfoxVersion}"
