@@ -8,7 +8,7 @@ repositories {
 }
 
 swagger {
-    inputSpec = 'http://petstore.swagger.io/v2/swagger.json'
+    inputSpec = 'swagger.json'
 
     output = 'build/swagger'
     language = 'java'

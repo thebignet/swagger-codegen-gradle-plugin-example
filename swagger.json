@@ -1,0 +1,109 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Api Documentation",
+    "version": "1.0",
+    "title": "Api Documentation",
+    "termsOfService": "urn:tos",
+    "contact": {},
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "host": "localhost:8080",
+  "basePath": "/product-server",
+  "tags": [
+    {
+      "name": "address-api-controller",
+      "description": "the address API"
+    }
+  ],
+  "paths": {
+    "/address{?city,state,zip}": {
+      "get": {
+        "tags": [
+          "address-api-controller"
+        ],
+        "summary": "getAddress",
+        "description": "Validates a provided address.",
+        "operationId": "getAddressUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "description": "the city",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "the state",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "zip",
+            "in": "query",
+            "description": "the zip",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The validated address.",
+            "schema": {
+              "$ref": "#/definitions/CityStateZip"
+            }
+          },
+          "422": {
+            "description": "The address is not valid.",
+            "schema": {
+              "$ref": "#/definitions/CityStateZip"
+            }
+          },
+          "500": {
+            "description": "500 message",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "tokenKey": {
+      "type": "apiKey",
+      "name": "tokenKey",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "CityStateZip": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "preferred": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
