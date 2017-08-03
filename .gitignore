@@ -21,6 +21,8 @@ gradle-app.setting
 .settings/
 .project
 .classpath
+
+# IntellijIDEA
 .idea
 *.iml
 *.ipr
