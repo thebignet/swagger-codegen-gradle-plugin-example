@@ -34,10 +34,6 @@ swagger {
             'apiPackage'       : 'io.swagger.petstore.client.api',
             'dateLibrary'      : 'java8'
     ]
-    systemProperties = [
-            'apis' : '',
-            'models' : ''
-    ]
     importMappings = [
             'Dog': 'io.swagger.petstore.client.model.Dog'
     ]
@@ -49,6 +45,11 @@ sourceSets {
             srcDir file("${project.buildDir.path}/swagger/src/main/java")
         }
     }
+}
+
+task swaggerTest(type: Test) {
+    testClassesDir = sourceSets.swagger.output.classesDir
+    classpath = sourceSets.swagger.runtimeClasspath
 }
 
 ext {
