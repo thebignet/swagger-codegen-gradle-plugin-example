@@ -4,6 +4,9 @@ src/swagger
 .gradle
 build/
 bin/
+generated-sources
+gradle.properties
+classes/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -18,3 +21,9 @@ gradle-app.setting
 .settings/
 .project
 .classpath
+.idea
+*.iml
+*.ipr
+*.iws
+
+.DS_Store
