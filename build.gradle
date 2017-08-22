@@ -1,53 +1,74 @@
-/*buildscript {
+buildscript {
     repositories {
-        maven {
-            url uri('../repo')
-        }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.detoeuf', name: 'swagger-codegen-plugin',
-                version: '1.7.4'
+        classpath('io.swagger:swagger-codegen:2.2.3')
     }
-}*/
+}
 
 plugins {
-    id 'org.detoeuf.swagger-codegen' version '1.7.4'
     id 'java'
 }
 
-apply plugin: 'org.detoeuf.swagger-codegen'
-
 repositories {
     mavenCentral()
-    jcenter()
 }
 
-swagger {
-    inputSpec = 'http://petstore.swagger.io/v2/swagger.json'
-    outputDir = file('build/swagger')
-    lang = 'java'
+import io.swagger.codegen.config.CodegenConfigurator
+import io.swagger.codegen.DefaultGenerator
 
-    additionalProperties = [
-            'invokerPackage'   : 'io.swagger.petstore.client',
-            'modelPackage'     : 'io.swagger.petstore.client.model',
-            'apiPackage'       : 'io.swagger.petstore.client.api',
-            'dateLibrary'      : 'java8'
-    ]
-    importMappings = [
-            'Dog': 'io.swagger.petstore.client.model.Dog'
-    ]
+def swaggerInput = "petstore.json"
+def swaggerOutputDir = file('build/swagger')
+task generateApi {
+    inputs.file(swaggerInput)
+    outputs.dir(swaggerOutputDir)
+    doLast {
+        def config = new CodegenConfigurator()
+        config.setInputSpec(swaggerInput)
+        config.setOutputDir(swaggerOutputDir.path)
+        config.setLang('java')
+        config.setAdditionalProperties([
+                'invokerPackage': 'io.swagger.petstore.client',
+                'modelPackage'  : 'io.swagger.petstore.client.model',
+                'apiPackage'    : 'io.swagger.petstore.client.api',
+                'dateLibrary'   : 'java8'
+        ])
+        config.setImportMappings([
+                'Dog': 'io.swagger.petstore.client.model.Dog'
+        ])
+        new DefaultGenerator().opts(config.toClientOptInput()).generate()
+    }
+}
+
+clean.doFirst {
+    delete(swaggerOutputDir)
+}
+
+configurations {
+    swagger
 }
 
 sourceSets {
     swagger {
+        compileClasspath = configurations.swaggerCompile
         java {
             srcDir file("${project.buildDir.path}/swagger/src/main/java")
         }
     }
+    main {
+        compileClasspath += swagger.output
+        runtimeClasspath += swagger.output
+    }
+    test {
+        compileClasspath += swagger.output
+        runtimeClasspath += swagger.output
+    }
 }
 
-classes.dependsOn('swagger')
+compileSwaggerJava.dependsOn generateApi
+classes.dependsOn swaggerClasses
+compileJava.dependsOn compileSwaggerJava
 
 ext {
     spring_boot_version = '1.5.6.RELEASE'
