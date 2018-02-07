@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('io.swagger:swagger-codegen:2.2.3')
+        classpath('io.swagger:swagger-codegen:2.3.1')
     }
 }
 
